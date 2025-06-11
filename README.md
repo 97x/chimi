@@ -1,207 +1,404 @@
-# Chimi
+# Chimi Scraper
 
-A TypeScript library for scraping game data from itch.io with a clean, scalable architecture. This library provides an intuitive API for fetching game information from various itch.io endpoints.
+**Chimi Scraper** is a professional-grade TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
 
-## Features
+## Overview
 
-- 🎮 **Multiple Game Categories**: New & Popular, Top Sellers, Top Rated, Newest games
-- 🔍 **Search Functionality**: Search for games by query
-- 📋 **Detailed Game Info**: Fetch comprehensive metadata including descriptions, screenshots, videos, pricing, platforms
-- 🏗️ **Clean Architecture**: Follows modern software design patterns for maintainability
-- 📦 **TypeScript Support**: Full TypeScript support with proper type definitions
-- ⚡ **Lightweight & Fast**: Minimal dependencies, optimized for performance
+Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques. The library abstracts the complexity of HTML parsing and data extraction, offering a clean, type-safe interface for accessing game metadata, pricing information, developer details, and media assets.
+
+### Key Capabilities
+
+- **Comprehensive Game Discovery**: Access curated game collections including New & Popular, Top Sellers, Top Rated, and newest releases
+- **Advanced Search**: Query games by keywords with pagination support
+- **Rich Metadata Extraction**: Retrieve detailed game information including descriptions, screenshots, videos, pricing, platform compatibility, and developer information
+- **Production-Ready Architecture**: Provider-based design with abstract base classes for easy extensibility
+- **Type Safety**: Full TypeScript support with comprehensive interface definitions
+- **Performance Optimized**: Minimal dependencies with efficient scraping algorithms
+
+## Use Cases
+
+### API Development
+Build REST APIs for indie game platforms, enabling front-end applications to access itch.io data through standardized endpoints.
+
+### Data Analytics
+Create analytics dashboards and reporting tools by aggregating game data, pricing trends, and market insights.
+
+### Game Discovery Platforms
+Develop recommendation engines and discovery platforms that leverage itch.io's extensive catalog.
+
+### Market Research
+Collect data for market analysis, competitive research, and indie game industry trends.
 
 ## Installation
 
 ```bash
-npm install chimi
+npm install chimi-scraper
 ```
 
-## Usage
+## Quick Start
 
-### Basic Usage
+### TypeScript/ESM
 
 ```typescript
-import { GAMES } from 'chimi';
+import { GAMES } from 'chimi-scraper';
 
-const itch = new GAMES.ItchIO();
+const scraper = new GAMES.ItchIO();
 
-// Get new and popular games
-const newAndPopular = await itch.fetchNewAndPopular(1);
-console.log(newAndPopular.results);
+// Fetch trending games
+const trending = await scraper.fetchNewAndPopular(1);
+console.log(`Found ${trending.results.length} trending games`);
 
-// Get top sellers
-const topSellers = await itch.fetchTopSellers(1);
-console.log(topSellers.results);
-
-// Get top rated games
-const topRated = await itch.fetchTopRated(1);
-console.log(topRated.results);
-
-// Get newest games
-const newest = await itch.fetchNewest(1);
-console.log(newest.results);
-
-// Search for games
-const searchResults = await itch.search('horror', 1);
+// Search for specific games
+const searchResults = await scraper.search('puzzle platformer', 1);
 console.log(searchResults.results);
 
 // Get detailed game information
-const gameInfo = await itch.fetchGameInfo('https://example.itch.io/game-url');
-console.log(gameInfo);
+const gameDetails = await scraper.fetchGameInfo(searchResults.results[0].url);
+console.log(gameDetails);
 ```
 
-### CommonJS Usage
+### CommonJS/Node.js
 
 ```javascript
-const { GAMES } = require('chimi');
+const { GAMES } = require('chimi-scraper');
 
-const itch = new GAMES.ItchIO();
+const scraper = new GAMES.ItchIO();
 
-async function getGames() {
+async function fetchGames() {
   try {
-    const games = await itch.fetchNewAndPopular(1);
-    console.log(games.results);
+    const topSellers = await scraper.fetchTopSellers(1);
+    return topSellers.results;
   } catch (error) {
-    console.error('Error fetching games:', error);
+    console.error('Failed to fetch games:', error);
+    throw error;
   }
 }
+```
 
-getGames();
+## Building APIs with Chimi Scraper
+
+Chimi Scraper is designed to be the foundation for building robust game data APIs. Here's how to create a RESTful API:
+
+### Express.js API Example
+
+```typescript
+import express from 'express';
+import { GAMES } from 'chimi-scraper';
+
+const app = express();
+const scraper = new GAMES.ItchIO();
+
+// Get trending games
+app.get('/api/games/trending', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const games = await scraper.fetchNewAndPopular(page);
+    res.json(games);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trending games' });
+  }
+});
+
+// Search games
+app.get('/api/games/search', async (req, res) => {
+  try {
+    const query = req.query.q as string;
+    const page = parseInt(req.query.page as string) || 1;
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query parameter required' });
+    }
+    
+    const results = await scraper.search(query, page);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
+// Get detailed game information
+app.get('/api/games/:id', async (req, res) => {
+  try {
+    const gameUrl = decodeURIComponent(req.params.id);
+    const gameInfo = await scraper.fetchGameInfo(gameUrl);
+    res.json(gameInfo);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch game details' });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Game API running on port 3000');
+});
+```
+
+### API Design Patterns
+
+**RESTful Endpoints Structure:**
+```
+GET /api/games/trending?page=1
+GET /api/games/top-sellers?page=1
+GET /api/games/top-rated?page=1
+GET /api/games/newest?page=1
+GET /api/games/search?q=horror&page=1
+GET /api/games/details/:gameId
+```
+
+**Response Caching:**
+```typescript
+import NodeCache from 'node-cache';
+const cache = new NodeCache({ stdTTL: 600 }); // 10 minute cache
+
+app.get('/api/games/trending', async (req, res) => {
+  const cacheKey = `trending-${req.query.page || 1}`;
+  const cached = cache.get(cacheKey);
+  
+  if (cached) {
+    return res.json(cached);
+  }
+  
+  const games = await scraper.fetchNewAndPopular(parseInt(req.query.page) || 1);
+  cache.set(cacheKey, games);
+  res.json(games);
+});
 ```
 
 ## API Reference
 
-### ItchIO Class
+### Core Classes
 
-#### Methods
+#### `GAMES.ItchIO`
+The primary scraper class for itch.io game data extraction.
 
-##### `fetchNewAndPopular(page?: number): Promise<ISearch<IGameResult>>`
-Fetches new and popular games from itch.io.
+**Constructor:**
+```typescript
+const scraper = new GAMES.ItchIO();
+```
 
-##### `fetchTopSellers(page?: number): Promise<ISearch<IGameResult>>`
-Fetches top selling games from itch.io.
+**Methods:**
 
-##### `fetchTopRated(page?: number): Promise<ISearch<IGameResult>>`
-Fetches top rated games from itch.io.
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `fetchNewAndPopular` | `page?: number` | `Promise<ISearch<IGameResult>>` | Retrieves games from itch.io's "New & Popular" section |
+| `fetchTopSellers` | `page?: number` | `Promise<ISearch<IGameResult>>` | Retrieves top-selling games with sales data |
+| `fetchTopRated` | `page?: number` | `Promise<ISearch<IGameResult>>` | Retrieves highest-rated games by user ratings |
+| `fetchNewest` | `page?: number` | `Promise<ISearch<IGameResult>>` | Retrieves recently published games |
+| `search` | `query: string, page?: number` | `Promise<ISearch<IGameResult>>` | Searches games by keyword with pagination |
+| `fetchGameInfo` | `gameUrl: string` | `Promise<IGameInfo>` | Retrieves comprehensive game metadata |
 
-##### `fetchNewest(page?: number): Promise<ISearch<IGameResult>>`
-Fetches newest games from itch.io.
-
-##### `search(query: string, page?: number): Promise<ISearch<IGameResult>>`
-Searches for games based on a query string.
-
-##### `fetchGameInfo(gameUrl: string): Promise<IGameInfo>`
-Fetches detailed information about a specific game.
-
-### Types
+### TypeScript Interfaces
 
 #### `IGameResult`
+Basic game information returned from list operations:
+
 ```typescript
 interface IGameResult {
-  id: string;
-  title: string;
-  url: string;
-  image?: string;
-  price?: IPrice;
-  isFree: boolean;
-  platforms?: string[];
-  developer?: string;
+  id: string;           // Unique game identifier
+  title: string;        // Game title
+  url: string;          // Direct link to game page
+  image?: string;       // Thumbnail image URL
+  price?: IPrice;       // Pricing information
+  isFree: boolean;      // Free game indicator
+  platforms?: string[]; // Supported platforms
+  developer?: string;   // Developer/publisher name
 }
 ```
 
 #### `IGameInfo`
+Comprehensive game metadata from detailed scraping:
+
 ```typescript
 interface IGameInfo {
   id: string;
   title: string;
   url: string;
   image?: string;
-  cover?: string;
-  description?: string;
-  genres?: string[];
-  tags?: string[];
+  cover?: string;       // High-resolution cover image
+  description?: string; // Full game description
+  genres?: string[];    // Game categories/genres
+  tags?: string[];      // User-generated tags
   price?: IPrice;
   isFree: boolean;
-  isOnSale?: boolean;
-  originalPrice?: IPrice;
-  platforms?: string[];
-  releaseDate?: string;
-  rating?: number;
-  ratingCount?: number;
+  isOnSale?: boolean;   // Sale status indicator
+  originalPrice?: IPrice; // Pre-sale pricing
+  platforms?: string[]; // Platform compatibility
+  releaseDate?: string; // Publication date
+  rating?: number;      // Average user rating
+  ratingCount?: number; // Number of ratings
   developer?: string;
   publisher?: string;
-  screenshots?: string[];
-  videos?: string[];
+  screenshots?: string[]; // Game screenshot URLs
+  videos?: string[];    // Trailer/video URLs
 }
 ```
 
 #### `ISearch<T>`
+Paginated search results container:
+
 ```typescript
 interface ISearch<T> {
-  currentPage?: number;
-  hasNextPage?: boolean;
-  totalPages?: number;
-  totalResults?: number;
-  results: T[];
+  currentPage?: number;   // Current page number
+  hasNextPage?: boolean;  // Next page availability
+  totalPages?: number;    // Total page count (when available)
+  totalResults?: number;  // Total result count (when available)
+  results: T[];          // Array of results
+}
+```
+
+#### `IPrice`
+Pricing information structure:
+
+```typescript
+interface IPrice {
+  amount: number;     // Numeric price value
+  currency: string;   // Currency code (typically "USD")
+  formatted: string;  // Display-formatted price string
 }
 ```
 
 ## Architecture
 
-This library follows modern architectural patterns for maintainability and scalability:
+Chimi Scraper employs a robust, extensible architecture designed for enterprise-grade applications:
 
-- **Provider-based architecture**: Each platform (itch.io) is implemented as a provider
-- **Abstract base classes**: Common functionality is shared through abstract parsers
-- **Type safety**: Full TypeScript support with comprehensive type definitions
-- **Modular design**: Easy to extend and maintain
+### Design Principles
+
+- **Provider Pattern**: Platform-specific implementations (itch.io) are encapsulated as providers, enabling easy extension to additional gaming platforms
+- **Abstract Base Classes**: Common scraping functionality is abstracted into base classes, promoting code reuse and consistency
+- **Type Safety**: Comprehensive TypeScript definitions ensure compile-time error detection and enhanced developer experience
+- **Separation of Concerns**: Clear separation between data models, HTTP utilities, parsing logic, and provider implementations
 
 ### Project Structure
 
 ```
-src/
-├── models/           # Type definitions and abstract classes
-│   ├── types.ts      # Interface definitions
-│   ├── base-parser.ts # Base parser abstract class
-│   └── game-parser.ts # Game-specific parser abstract class
-├── providers/        # Platform-specific implementations
-│   └── games/
-│       └── itch.ts   # Itch.io provider implementation
-├── utils/           # Utility functions
-│   ├── http.ts      # HTTP client utilities
-│   └── parser.ts    # Parsing helper functions
-└── index.ts         # Main entry point
+chimi-scraper/
+├── src/
+│   ├── models/                 # Core type definitions and interfaces
+│   │   ├── types.ts           # Data structure definitions
+│   │   ├── base-parser.ts     # Abstract scraper foundation
+│   │   └── game-parser.ts     # Game-specific scraping contracts
+│   ├── providers/             # Platform implementations
+│   │   └── games/
+│   │       └── itch.ts        # itch.io scraping implementation
+│   ├── utils/                 # Shared utilities
+│   │   ├── http.ts           # HTTP client with retry logic
+│   │   └── parser.ts         # HTML parsing helpers
+│   └── index.ts              # Public API exports
+├── examples/                  # Implementation examples
+├── dist/                     # Compiled JavaScript output
+└── README.md
 ```
 
-## Error Handling
+## Best Practices
 
-All methods throw descriptive errors when requests fail:
+### Error Handling
+Implement comprehensive error handling for production applications:
 
 ```typescript
-try {
-  const games = await itch.fetchNewAndPopular(1);
-} catch (error) {
-  console.error('Failed to fetch games:', error.message);
+import { GAMES } from 'chimi-scraper';
+
+const scraper = new GAMES.ItchIO();
+
+async function safelyFetchGames(category: string, page: number = 1) {
+  try {
+    switch (category) {
+      case 'trending':
+        return await scraper.fetchNewAndPopular(page);
+      case 'top-sellers':
+        return await scraper.fetchTopSellers(page);
+      default:
+        throw new Error(`Unknown category: ${category}`);
+    }
+  } catch (error) {
+    console.error(`Failed to fetch ${category} games:`, error);
+    return { results: [], hasNextPage: false, currentPage: page };
+  }
 }
 ```
 
-## Rate Limiting
+### Rate Limiting & Production Considerations
 
-The library includes built-in request headers to appear as a regular browser, helping to avoid rate limiting. For production use with high traffic, consider implementing additional rate limiting on your end.
+For high-traffic applications, implement proper rate limiting and caching:
+
+```typescript
+import rateLimit from 'express-rate-limit';
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP'
+});
+
+app.use('/api/', limiter);
+```
+
+### Response Optimization
+
+Optimize API responses for bandwidth efficiency:
+
+```typescript
+app.get('/api/games/trending', async (req, res) => {
+  const games = await scraper.fetchNewAndPopular(1);
+  
+  // Return only essential fields for list views
+  const optimizedResults = games.results.map(game => ({
+    id: game.id,
+    title: game.title,
+    url: game.url,
+    image: game.image,
+    isFree: game.isFree,
+    platforms: game.platforms
+  }));
+  
+  res.json({
+    ...games,
+    results: optimizedResults
+  });
+});
+```
+
+## Performance Considerations
+
+- **Concurrent Requests**: Implement request queuing for bulk operations
+- **Caching Strategy**: Cache responses for frequently requested data
+- **Connection Pooling**: Reuse HTTP connections for efficiency
+- **Error Recovery**: Implement exponential backoff for failed requests
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. When contributing:
+We welcome contributions from the developer community. Please follow these guidelines:
 
-1. Follow the existing code style
-2. Add tests for new features
-3. Update documentation as needed
-4. Follow the established architectural patterns
+### Development Setup
+```bash
+git clone https://github.com/97x/chimi.git
+cd chimi
+npm install
+npm run build
+```
+
+### Contribution Guidelines
+1. **Code Quality**: Maintain TypeScript strict mode compliance
+2. **Testing**: Add comprehensive tests for new features
+3. **Documentation**: Update relevant documentation and type definitions
+4. **Architecture**: Follow established patterns and design principles
+
+### Pull Request Process
+1. Fork the repository and create a feature branch
+2. Implement changes with appropriate tests
+3. Ensure all existing tests pass
+4. Update documentation as needed
+5. Submit a pull request with a clear description
 
 ## License
 
 MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Related Projects
+## Support & Resources
 
-- [itch.io](https://itch.io) - The platform this library scrapes data from
+- **Documentation**: [GitHub Repository](https://github.com/97x/chimi)
+- **Issues**: [Report bugs and request features](https://github.com/97x/chimi/issues)
+- **itch.io Platform**: [Official itch.io website](https://itch.io)
+
+---
+
+**Note**: This library is designed for legitimate data access and should be used in compliance with itch.io's terms of service and robots.txt guidelines. Always implement appropriate rate limiting and respect the platform's resources.
