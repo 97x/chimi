@@ -1,6 +1,6 @@
 # Chimi Scraper
 
-**Chimi Scraper** is a professional-grade TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
+**Chimi Scraper** is a TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
 
 ## Overview
 
