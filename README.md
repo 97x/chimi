@@ -1,11 +1,11 @@
-# Chimi Scraper
 
-**Chimi Scraper** is a professional-grade TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
+![Screenshot_1](https://github.com/user-attachments/assets/fd4ef32f-631e-4742-920d-01dd2355c9da)
+
+**Chimi Scraper** is a TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
 
 ## Overview
 
-Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques. The library abstracts the complexity of HTML parsing and data extraction, offering a clean, type-safe interface for accessing game metadata, pricing information, developer details, and media assets.
-
+Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques.
 ### Key Capabilities
 
 - **Comprehensive Game Discovery**: Access curated game collections including New & Popular, Top Sellers, Top Rated, and newest releases
@@ -267,26 +267,6 @@ Chimi Scraper employs a robust, extensible architecture designed for enterprise-
 - **Type Safety**: Comprehensive TypeScript definitions ensure compile-time error detection and enhanced developer experience
 - **Separation of Concerns**: Clear separation between data models, HTTP utilities, parsing logic, and provider implementations
 
-### Project Structure
-
-```
-chimi-scraper/
-├── src/
-│   ├── models/                 # Core type definitions and interfaces
-│   │   ├── types.ts           # Data structure definitions
-│   │   ├── base-parser.ts     # Abstract scraper foundation
-│   │   └── game-parser.ts     # Game-specific scraping contracts
-│   ├── providers/             # Platform implementations
-│   │   └── games/
-│   │       └── itch.ts        # itch.io scraping implementation
-│   ├── utils/                 # Shared utilities
-│   │   ├── http.ts           # HTTP client with retry logic
-│   │   └── parser.ts         # HTML parsing helpers
-│   └── index.ts              # Public API exports
-├── examples/                  # Implementation examples
-├── dist/                     # Compiled JavaScript output
-└── README.md
-```
 
 ## Best Practices
 
@@ -366,15 +346,7 @@ app.get('/api/games/trending', async (req, res) => {
 
 ## Contributing
 
-We welcome contributions from the developer community. Please follow these guidelines:
-
-### Development Setup
-```bash
-git clone https://github.com/97x/chimi.git
-cd chimi
-npm install
-npm run build
-```
+ Contributions are always welcome! Please follow these guidelines:
 
 ### Contribution Guidelines
 1. **Code Quality**: Maintain TypeScript strict mode compliance
