@@ -4,8 +4,7 @@
 
 ## Overview
 
-Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques. The library abstracts the complexity of HTML parsing and data extraction, offering a clean, type-safe interface for accessing game metadata, pricing information, developer details, and media assets.
-
+Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques.
 ### Key Capabilities
 
 - **Comprehensive Game Discovery**: Access curated game collections including New & Popular, Top Sellers, Top Rated, and newest releases
