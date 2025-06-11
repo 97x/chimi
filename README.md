@@ -266,26 +266,6 @@ Chimi Scraper employs a robust, extensible architecture designed for enterprise-
 - **Type Safety**: Comprehensive TypeScript definitions ensure compile-time error detection and enhanced developer experience
 - **Separation of Concerns**: Clear separation between data models, HTTP utilities, parsing logic, and provider implementations
 
-### Project Structure
-
-```
-chimi-scraper/
-├── src/
-│   ├── models/                 # Core type definitions and interfaces
-│   │   ├── types.ts           # Data structure definitions
-│   │   ├── base-parser.ts     # Abstract scraper foundation
-│   │   └── game-parser.ts     # Game-specific scraping contracts
-│   ├── providers/             # Platform implementations
-│   │   └── games/
-│   │       └── itch.ts        # itch.io scraping implementation
-│   ├── utils/                 # Shared utilities
-│   │   ├── http.ts           # HTTP client with retry logic
-│   │   └── parser.ts         # HTML parsing helpers
-│   └── index.ts              # Public API exports
-├── examples/                  # Implementation examples
-├── dist/                     # Compiled JavaScript output
-└── README.md
-```
 
 ## Best Practices
 
@@ -365,15 +345,7 @@ app.get('/api/games/trending', async (req, res) => {
 
 ## Contributing
 
-We welcome contributions from the developer community. Please follow these guidelines:
-
-### Development Setup
-```bash
-git clone https://github.com/97x/chimi.git
-cd chimi
-npm install
-npm run build
-```
+ Contributions are always welcome! Please follow these guidelines:
 
 ### Contribution Guidelines
 1. **Code Quality**: Maintain TypeScript strict mode compliance
