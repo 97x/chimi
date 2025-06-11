@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="logo.svg" alt="Chimi" width="400" height="120">
+  <img src="logo.svg" alt="Chimi">
+  
+  [![npm version](https://badge.fury.io/js/chimi.svg)](https://badge.fury.io/js/chimi-scraper)
+  [![npm downloads](https://img.shields.io/npm/dm/chimi.svg)](https://www.npmjs.com/package/chimi-scraper)
 </div>
 
 # chimi
