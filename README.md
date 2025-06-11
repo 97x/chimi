@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logo.svg" alt="Chimi" width="220" height="80">
+  <img src="logo.svg" alt="Chimi" width="400" height="120">
 </div>
 
 # chimi
