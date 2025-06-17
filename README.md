@@ -1,17 +1,13 @@
 ## What is Chimi?
-**Chimi** is a TypeScript library designed for extracting comprehensive game data from itch.io. Built with a robust, scalable architecture, it enables developers to efficiently scrape game information and build powerful APIs for indie game aggregation platforms, analytics tools, and data-driven applications.
+**Chimi** is a TypeScript library designed for extracting comprehensive game data from itch.io. I enables developers to efficiently scrape game information and build APIs for indie game aggregation platforms, analytics tools, and data-driven applications, etc.
 
-## Overview
 
-Chimi Scraper provides programmatic access to itch.io's extensive game catalog through web scraping techniques.
 ### Key Capabilities
 
 - **Comprehensive Game Discovery**: Access curated game collections including New & Popular, Top Sellers, Top Rated, and newest releases
 - **Advanced Search**: Query games by keywords with pagination support
 - **Rich Metadata Extraction**: Retrieve detailed game information including descriptions, screenshots, videos, pricing, platform compatibility, and developer information
-- **Production-Ready Architecture**: Provider-based design with abstract base classes for easy extensibility
 - **Type Safety**: Full TypeScript support with comprehensive interface definitions
-- **Performance Optimized**: Minimal dependencies with efficient scraping algorithms
 
 ## Use Cases
 
